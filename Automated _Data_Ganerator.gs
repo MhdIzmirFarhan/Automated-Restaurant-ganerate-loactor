@@ -9,7 +9,7 @@ function AutomatedDataEntry() {
     sheet.clear();
   }
 
-  var apiKey = "AIzaSyDQ6hcdYdfklrBZQ-1E_Xd9wKdyx8eaRU4"; // Replace with your actual API key
+  var apiKey = "xxxxxxxxxxxxxxxxxxxxx"; // Replace with your actual API key
   var businessTypes = ["restaurant, cafe"]; 
   var maxResults = 10;
   var collectedResults = 0;
