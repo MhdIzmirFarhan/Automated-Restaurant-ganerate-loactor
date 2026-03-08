@@ -1,0 +1,13 @@
+function sendWhatsAppMessage() {
+  var phoneNumber = "+601116231651"
+"; // Your or client's number in international format (no spaces, no dashes)"
+  var apiKey = "3434509";     // Replace with your API key from CallMeBot
+  var message = "Hello Encik Ali, just a gentle reminder for our demo session this Thursday. Let me know if it’s still on 🙂"; // Your message here
+
+  var url = "https://api.callmebot.com/whatsapp.php?phone=" + encodeURIComponent(phoneNumber) +
+            "&text=" + encodeURIComponent(message) +
+            "&apikey=" + encodeURIComponent(apiKey);
+
+  var response = UrlFetchApp.fetch(url);
+  Logger.log(response.getContentText());
+}
