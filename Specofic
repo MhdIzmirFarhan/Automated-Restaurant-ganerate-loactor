@@ -1,0 +1,60 @@
+function onEditAppointment(e) {
+  const sheet = e.source.getActiveSheet();
+  const editedCell = e.range;
+
+  // Column O = Status (11)
+  const statusCol = 11;
+  if (editedCell.getColumn() !== statusCol) return;
+
+  const row = editedCell.getRow();
+  const status = sheet.getRange(row, statusCol).getValue();
+
+  // Only continue if status = "Appointment Set"
+  if (status === "Appointment Set") {
+    // Get data from the row
+    const name = sheet.getRange(row, 2).getValue();       // Column B: Name
+    const address = sheet.getRange(row, 3).getValue();    // Column C: Address
+    const picName = sheet.getRange(row, 6).getValue();   // Column L: PIC Name
+    const picPhone = sheet.getRange(row, 7).getValue();  // Column M: PIC Phone
+    const apptDate = sheet.getRange(row, 8).getValue();  // Column Q: Date
+    const apptTime = sheet.getRange(row, 9).getValue();  // Column R: Time
+    const caller = sheet.getRange(row, 10).getValue();  // Column R: Time
+    const sourceSheet = sheet.getName();
+
+    // Make sure date & time are valid
+    if (!(apptDate instanceof Date) || !(apptTime instanceof Date)) {
+      SpreadsheetApp.getUi().alert("❌ Invalid or missing appointment date/time.");
+      return;
+    }
+
+    // Combine date + time into one datetime
+    const startTime = new Date(
+      apptDate.getFullYear(),
+      apptDate.getMonth(),
+      apptDate.getDate(),
+      apptTime.getHours(),
+      apptTime.getMinutes()
+    );
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // +1 hour
+
+    // 1️⃣ Update "Appointment Set" sheet
+    const targetSheet = e.source.getSheetByName("Appointment Set");
+    if (!targetSheet) {
+      SpreadsheetApp.getUi().alert("❌ No sheet named 'Appointment Set'");
+      return;
+    }
+    targetSheet.appendRow([name, address, picName, picPhone, apptDate, apptTime, caller, sourceSheet]);
+
+    // 2️⃣ Add to Google Calendar automatically
+    const calendar = CalendarApp.getCalendarById("muhammadizmirfarhanbinkamal@gmail.com");
+    const title = `📅 Appointment with ${picName} (${name})`;
+    const description = `Restaurant: ${name}\nPIC: ${picName}\nPhone: ${picPhone}\nAddress: ${address}\nCaller: ${caller}`;
+
+    calendar.createEvent(title, startTime, endTime, {
+      location: address,
+      description: description
+    });
+
+    SpreadsheetApp.getUi().alert(`✅ Appointment for "${name}" has been added to:\n- Appointment Set sheet\n- Google Calendar`);
+  }
+}
