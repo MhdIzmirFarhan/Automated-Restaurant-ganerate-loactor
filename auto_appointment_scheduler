@@ -1,0 +1,45 @@
+function generatePDFReportFromRow() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var row = sheet.getActiveRange().getRow(); // Currently selected row
+
+  // === 1. Collect Data from Sheet === 
+  var data = {
+    Restaurant: sheet.getRange(row, 2).getValue(),
+    Date: sheet.getRange(row, 16).getValue(),
+    PICName: sheet.getRange(row, 12).getValue(),
+    PICContact: sheet.getRange(row, 13).getValue(),
+    Location: sheet.getRange(row, 3).getValue(),
+    Notes: sheet.getRange(row, 16).getValue()
+  };
+
+  // === 2. Load Template ===
+  var docId = "1qNC9e9MaIPMaWtCNfGivVz_WlchieIGtbNfsJP1nKTs"; // Your Google Docs template ID
+  // var templateId = "1Lz9B29JeLOIHhX3cYHJKDUws0STYXrzr_3Pcbx58RyQ"; // Your Google Docs template ID
+  // var templateDoc = DriveApp.getFileById(templateId).makeCopy(`Report for ${data.Restaurant}`);
+  // var doc = DocumentApp.openById(templateDoc.getId());
+  var doc = DocumentApp.openById(docId);
+  var body = doc.getBody();
+
+  // === 3. Replace Placeholders ===
+  body.replaceText("{{Restaurant}}", data.Restaurant);
+  body.replaceText("{{Date}}", data.Date);
+  body.replaceText("{{PIC}}", `${data.PICName} - ${data.PICContact}`);
+  body.replaceText("{{Location}}", data.Location);
+  body.replaceText("{{Notes}}", data.Notes);
+
+  doc.saveAndClose();
+
+  // === 4. Export as PDF ===
+  // var pdf = DriveApp.getFileById(doc.getId()).getAs("application/pdf");
+  // pdf.setName(`Meeting Report - ${data.Restaurant} - ${data.Date}`);
+
+  // === 5. Save to Specific Folder (Optional) ===
+  // var folder = DriveApp.getFolderById("PASTE_FOLDER_ID_IF_YOU_WANT"); // Optional
+  // folder.createFile(pdf);
+
+  // === 6. Clean up temp Doc (Optional) ===
+  // DriveApp.getFileById(doc.getId()).setTrashed(true);
+
+  // === 7. Alert Done ===
+  SpreadsheetApp.getUi().alert("PDF report generated successfully!");
+}
